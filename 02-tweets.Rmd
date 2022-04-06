@@ -1,0 +1,66 @@
+---
+title: "DuBois Challenge"
+output: html_document
+---
+
+```{r}
+
+library(tidyverse)
+library(lubridate)
+library(stringr)
+# foco deste tutorial
+
+library(tidytext)
+
+dados <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/fb6d329dff579cd2bc1715d68d478ed1f161edbe/data/2021/2021-06-15/%23DuBoisChallengeTweets.csv")
+```
+
+# Sobre este trabalho
+
+Este documento analisa `r nrow(dados)` tweets referentes ao DuBoisChallenge, que aconteceu em uma Tidy Tuesday e as pessoas poderiam participar utilizando a hashtag #DuBoisChallenge no Twitter.
+
+Os objetivos desta análise são:
+
+1. Avaliar a adesão a esse evento. 
+    - Perguntas secundárias relevantes: quantas pessoas participaram, como foi o engajamento ao longo do tempo, se quem participa é um grande usuário ou não etc.
+2. Avaliar o "churn" nesse desafio. 
+    - O desafio era composto por vários gráficos. A ideia aqui é calcular
+    quantas pessoas participaram das 7 semanas e quantas não.
+3. Análise geral do conteúdo dos tweets.
+    - Termos mais usados, se os termos variam ao longo do tempo.
+    
+# Avaliação da adesão ao evento
+
+```{r}
+
+# primeiro de algum modo cria uma coluna "dia"
+# dica: dá pra usar o pacote lubridate
+# as.Date(Datetime) transforma em "dia"
+
+dados_para_grafico <- dados |> 
+  mutate(
+    #dia = as.Date(Datetime)
+    #dia = lubridate::day(as.Date(Datetime))
+    dia = floor_date(Datetime, "day")
+  )
+
+# é um bom exercício procurar no lubridate oq vc poderia usar
+
+# segundo faz uma contagem de linhas da base agrupada pela coluna "dia"
+
+dados_para_grafico_2 <- dados_para_grafico |> 
+  group_by(dia) |> 
+  count()
+
+# terceiro monta o ggplot (e customiza bonitinho)
+
+dados_para_grafico_2 |> 
+  ggplot(aes(x = dia, y = n)) + 
+  geom_point() +
+  theme_bw() +
+  labs(x = "Dia da postagem",
+       y = "Número de Tweets no Dia")
+
+```
+
+
