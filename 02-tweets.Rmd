@@ -24,8 +24,7 @@ Os objetivos desta análise são:
 1. Avaliar a adesão a esse evento. 
     - Perguntas secundárias relevantes: quantas pessoas participaram, como foi o engajamento ao longo do tempo, se quem participa é um grande usuário ou não etc.
 2. Avaliar o "churn" nesse desafio. 
-    - O desafio era composto por vários gráficos. A ideia aqui é calcular
-    quantas pessoas participaram das 7 semanas e quantas não.
+    - O desafio era composto por vários gráficos. A ideia aqui é calcular quantas pessoas participaram das 7 semanas e quantas não.
 3. Análise geral do conteúdo dos tweets.
     - Termos mais usados, se os termos variam ao longo do tempo.
     
@@ -63,4 +62,192 @@ dados_para_grafico_2 |>
 
 ```
 
+```{r}
+dados_para_grafico |> 
+  group_by(dia) |> 
+  summarise(
+    n = n(),
+    media_retweets = mean(RetweetCount)
+  ) |> 
+  ggplot(aes(x = dia, y = media_retweets)) + 
+  geom_point() + 
+  theme_bw()
+```
+```{r}
+dados_para_grafico |> 
+  group_by(dia) |> 
+  summarise(
+    n = n(),
+    numero_retweets = mean(RetweetCount),
+    numero_usuarios_distintos = length(unique(Username))
+  ) |> 
+  ggplot(aes(x = dia, y = numero_usuarios_distintos)) + 
+  geom_point() + 
+  theme_bw()
+```
+
+
+```{r}
+
+# Construa um histograma (ou densidade) do número de seguidores dos usuários que participaram do desafio
+
+dados |> 
+  distinct(Username, Followers) |>
+  ggplot(aes(x = Followers)) +
+  geom_histogram(fill = 'royalblue', bins = 12) +
+  theme_bw() +
+  scale_x_log10(labels = scales::comma_format(big.mark = ".",
+                                              decimal.mark = ","))
+
+# código rascunho para ver se tem repetição de usuários
+
+# dados |>
+# distinct(Username, Followers) |>
+# count(Username) |>
+# arrange(desc(n))
+
+```
+
+# Avaliando o "churn" do desafio
+
+```{r}
+dados |> 
+  mutate(
+    semana = floor_date(Datetime, "week")
+  ) |> 
+  group_by(Username) |> 
+  summarise(
+    numero_de_semanas = n_distinct(semana)
+  ) |> 
+  ungroup() |> 
+  mutate(
+    numero_de_semanas_participando = cut(
+      numero_de_semanas,
+      breaks = c(-Inf, 1, 2, 4, Inf),
+      labels = c("1 semana", "2 semanas", "3 ou 4 semanas", "Mais de 4 semanas")
+    )
+  ) |>
+  count(numero_de_semanas_participando) |> 
+  ggplot(aes(x = numero_de_semanas_participando, y = n)) + 
+  geom_col()
+```
+
+# Análise dos termos dos tweets
+
+```{r}
+# Primeiro, pra aumentar o nosso conhecimento sobre o engajamento, faz um gráfico de dispersão que compara o número de seguidores com o número de likes nos tweets
+
+# item 1: com repetições de seguidores
+
+dados |> 
+  ggplot(aes(x = Followers, y = `Like Count`)) + 
+  geom_point()
+
+# item 2: criando um sumário do número de likes nos tweets por seguidor
+
+dados |> 
+  group_by(Username, Followers) |> 
+  summarise(
+    media_likes = mean(`Like Count`)
+  ) |> 
+  ggplot(aes(x = Followers, y = media_likes)) + 
+  geom_point() +
+  scale_x_log10() +
+  scale_y_log10() +
+  theme_bw()
+
+# Segundo 
+
+# instale o tidytext
+
+# install.packages("tidytext")
+```
+
+# Análise dos textos dos tweets
+
+```{r}
+
+dados |> 
+  mutate(
+    origem_ingenua = str_extract_all(Text, "Twitter Web App|Twitter for iPhone|Buffer|Twitter for Android|Twitter for iPad|Twitter for Mac"),
+    origem = str_extract_all(Text, "Twitter (for [^<]+|Web App)"),
+    semana = str_extract(Content, "Week [0-9]|week [0-9]"),
+    tweet_limpo = str_remove_all(Content, "#DuBoisChallenge")
+  ) |> 
+  select(Content, tweet_limpo) |> 
+  View()
+  
+```
+
+```{r}
+
+library(tidytext)
+
+base_de_palavras <- dados |> 
+  unnest_tokens(palavra, Content)
+```
+
+```{r}
+# Crie um gráfico com os 20 termos mais usados nos tweets
+# de colunas 
+
+# dica: parta da tabela "base_de_palavras" que criamos acima
+
+base_de_palavras |> 
+  count(palavra) |> 
+  arrange(desc(n)) |> 
+  top_n(20) |> 
+  mutate(
+    palavra = fct_reorder(palavra, n)
+  ) |> 
+  ggplot(aes(y = palavra, x = n)) + 
+  geom_col(fill = 'royalblue') +
+  theme_bw()
+```
+
+```{r}
+
+minhas_stopwords <- c("t.co", "https", "duboischallenge", "week")
+
+dados |> 
+  mutate(
+    tweet_limpo = Content |> 
+      str_remove_all("#[^ ]+") |> 
+      str_remove_all("@[^ ]+"),
+    mes = floor_date(Datetime, "month")
+  ) |> 
+  unnest_tokens(palavra, tweet_limpo) |> 
+  filter(!(palavra %in% stop_words$word),
+         !(palavra %in% minhas_stopwords)) |> 
+  count(mes, palavra) |> 
+  arrange(desc(n)) |> 
+  top_n(20) |> 
+  mutate(
+    palavra = fct_reorder(palavra, n)
+  ) |> 
+  ggplot(aes(y = palavra, x = n)) + 
+  geom_col(fill = 'royalblue') +
+  theme_bw()
+```
+
+```{r}
+dados |> 
+  mutate(
+    tweet_limpo = Content |> 
+      str_remove_all("#[^ ]+") |> 
+      str_remove_all("@[^ ]+"),
+    mes = floor_date(Datetime, "month")
+  ) |> 
+  unnest_tokens(palavra, tweet_limpo) |> 
+  filter(!(palavra %in% stop_words$word),
+         !(palavra %in% minhas_stopwords)) |> 
+  count(mes, palavra) |> 
+  filter(palavra %in% c("data", "visualizations")) |> 
+  mutate(
+    palavra = fct_reorder(palavra, n)
+  ) |> 
+  ggplot(aes(y = palavra, x = n)) + 
+  geom_col(fill = 'royalblue') +
+  theme_bw()
+```
 
