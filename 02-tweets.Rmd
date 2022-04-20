@@ -207,19 +207,23 @@ base_de_palavras |>
 
 ```{r}
 
-minhas_stopwords <- c("t.co", "https", "duboischallenge", "week")
+stopwords_alopes <- readr::read_lines("https://gist.githubusercontent.com/alopes/5358189/raw/2107d809cca6b83ce3d8e04dbd9463283025284f/stopwords.txt") |> 
+  stringr::str_trim()
 
-dados |> 
+minhas_stopwords <- c("t.co", "https", "duboischallenge", "week",
+                      stopwords_alopes)
+
+rt |> 
   mutate(
-    tweet_limpo = Content |> 
+    tweet_limpo = text |> 
       str_remove_all("#[^ ]+") |> 
-      str_remove_all("@[^ ]+"),
-    mes = floor_date(Datetime, "month")
+      str_remove_all("@[^ ]+")#,
+    #mes = floor_date(Datetime, "month")
   ) |> 
   unnest_tokens(palavra, tweet_limpo) |> 
   filter(!(palavra %in% stop_words$word),
          !(palavra %in% minhas_stopwords)) |> 
-  count(mes, palavra) |> 
+  count(palavra) |> 
   arrange(desc(n)) |> 
   top_n(20) |> 
   mutate(
@@ -231,9 +235,9 @@ dados |>
 ```
 
 ```{r}
-dados |> 
+rt |> 
   mutate(
-    tweet_limpo = Content |> 
+    tweet_limpo = text |> 
       str_remove_all("#[^ ]+") |> 
       str_remove_all("@[^ ]+"),
     mes = floor_date(Datetime, "month")
