@@ -1,0 +1,181 @@
+---
+title: "Trabalhando com banco de dados"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Todo banco fala SQL
+
+# SQL é Structured Query Language
+
+library(DBI)
+library(tidyverse)
+# install.packages("bigrquery")
+
+con <- dbConnect(
+  bigrquery::bigquery(),
+  #driver... poderia ser RMYSQL::RMYSQL(), RPostgre, ODBC
+  # aqui vem suas credenciais.
+  # normalmente tem login e senha,
+  # mas não no caso do bigrquery
+  project = "basedosdados",
+  dataset = "br_anatel_banda_larga_fixa",
+  billing = "live-curso-r-bd-2"
+  # aqui vem o código do seu projeto
+)
+```
+
+```{r}
+dbListTables(con)
+```
+
+```{r}
+representaco_da_microdados <- tbl(con, "microdados")
+
+# toda vez que acontece um collect (provocado ou explicito)
+
+representaco_da_microdados %>% 
+  select(everything()) %>% 
+  head(10)
+```
+
+# Objetivos
+
+1. Avaliar o percentual de munícipios com fibra ótica no Brasil.
+
+2. Avaliar qual é o percentual de contratos de fibra ótica em cada município brasileiro.
+
+3. Avaliar como que as quantidades calculadas no 1. e no 2. variam ao longo do tempo.
+
+4. Calcular a taxa por 100 domicílios com fibra ótica em cada município.
+
+```{r}
+# exploração
+
+microdados <- tbl(con, "microdados")
+
+primeiras_100_linhas <- microdados %>% 
+  select(everything()) %>% 
+  head(100) %>% 
+  collect()
+
+alvaraes <- microdados %>% 
+  select(everything()) %>% 
+  filter(id_municipio == "1300029") %>% 
+  collect()
+
+microdados %>% 
+  count(tecnologia) %>% 
+  arrange(desc(n))
+```
+
+# Tabela de percentual de municipios com fibra ótica no Brasil
+
+```{r}
+
+# tabela com duas colunas:
+# id_municipio, flag_tem_fibra?
+
+contratos_com_fibra <- microdados %>% 
+  group_by(id_municipio) %>% 
+  summarise(
+    contratos_fibra = sum(acessos[tecnologia == "Fibra"])
+  ) %>%
+  collect()
+
+```
+
+# Avaliar qual é o percentual de contratos com fibra em cada município brasileiro
+
+```{r}
+
+percentual_de_fibra = microdados %>% 
+  group_by(sigla_uf, ano, mes, id_municipio) %>% 
+  summarise(
+    contratos_fibra = sum(acessos[REGEXP_CONTAINS(tecnologia, "fibra|Fibra|FTTH|FTTB|FTTC")]),
+    total_contratos = sum(acessos)
+  ) %>% 
+  mutate(
+    percentual = contratos_fibra/total_contratos
+  ) %>% 
+  collect()
+
+```
+# Análise da cobertura de fibra ao longo do tempo
+
+```{r}
+
+# gráfico com o percentual de municípios que tem fibra ao longo dos meses desde o começo da base
+
+percentual_de_fibra %>% 
+  group_by(sigla_uf, ano, mes) %>% 
+  summarise(
+    prevalencia_media_dos_contratos_de_fibra = median(percentual, na.rm = TRUE),
+    percentual = mean(!is.na(contratos_fibra)),
+    numero_de_contratos = sum(total_contratos)
+  ) %>% 
+  mutate(
+    data_ref = as.Date(paste0(ano,"-",mes,"-",01))
+  ) %>% 
+  ggplot() +
+  aes(x = data_ref, y = prevalencia_media_dos_contratos_de_fibra) + 
+  geom_line() +
+  facet_wrap(~sigla_uf, nrow = 4)
+# esse gráfico ficou estranho! vamos investigar
+
+```
+
+# Calcular a taxa por 100 domicílios
+
+```{r}
+
+percentual_de_fibra = microdados %>% 
+  group_by(sigla_uf, ano, mes, id_municipio) %>% 
+  summarise(
+    contratos_fibra = sum(
+      acessos[
+        REGEXP_CONTAINS(
+          tecnologia,
+          "fibra|Fibra|FTTH|FTTB|FTTC"
+        )
+      ]),
+    total_contratos = sum(acessos)
+  ) %>% 
+  mutate(
+    percentual = contratos_fibra/total_contratos
+  )
+
+numero_de_domicilios = tbl(con, "densidade_municipio") %>% 
+  mutate(
+    num_dom = 100*acessos/densidade
+  ) %>% 
+  distinct()
+
+tabela_final <- percentual_de_fibra %>% 
+  left_join(numero_de_domicilios) %>% 
+  collect()
+
+tabela_final %>% 
+  mutate(
+    taxa_de_domicilios_com_fibra = 100*contratos_fibra/(num_dom)
+  )  %>% 
+  group_by(sigla_uf, ano, mes) %>% 
+  summarise(
+    prevalencia_media_dos_contratos_de_fibra = median(percentual, na.rm = TRUE),
+    percentual = mean(!is.na(contratos_fibra)),
+    numero_de_contratos = sum(total_contratos),
+    taxa_mediana = median(taxa_de_domicilios_com_fibra, na.rm = TRUE)
+  ) %>% 
+  mutate(
+    data_ref = as.Date(paste0(ano,"-",mes,"-",01))
+  ) %>% 
+  ggplot() +
+  aes(x = data_ref, y = taxa_mediana) + 
+  geom_line() + 
+  facet_wrap(~sigla_uf, nrow = 4)
+
+```
+
+
