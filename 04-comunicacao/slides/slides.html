@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Boas práticas de comunicação</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="" />
+    <script src="libs/header-attrs-2.9/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://curso-r.github.io/assets/css/padrao-curso-r.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Boas práticas de comunicação
+## Workshop Data Sciente na Prática
+### <img src = 'https://d33wubrfki0l68.cloudfront.net/9b0699f18268059bdd2e5c21538a29eade7cbd2b/67e5c/img/logo/cursor1-5.png' width = '30%'>
+### Maio de 2022
+
+---
+
+
+
+
+
+
+## O ciclo da Ciência de Dados
+
+&lt;img src="img/ciclo-ciencia-de-dados.png" width="1277" style="display: block; margin: auto;" /&gt;
+
+---
+## Quem deve comunicar?
+
+A etapa de comunicação faz parte do ciclo da Ciência de Dados e, idealmente, deveria ser executada pelas pessoas responsáveis pela análise.
+
+Mesmo quando a pessoa cientista de dados não é diretamente responsável pela comunicação, ela deve acompanhar de perto esta etapa. 
+
+Se a pessoa comunicadora não tiver familiaridade com a análise realizada, todo o esforço aplicado na coleta, limpeza, manipulação, visualização e modelagem dos dados pode ser perdido.
+
+---
+## Desafios de comunicação
+
+A etapa de comunicação possui diversos desafios. Aqui, discutiremos três:
+
+- conhecer o seu público para saber como a história deve ser contada;
+
+- escolher o formato adequado para apresentar os resultados;
+
+- escolher a visualização adequada para cada informação.
+
+---
+## Como comunicar?
+
+Existem vários formatos de documentos em que podemos comunicar nossos resultados, cada um com o seu propósito específico. Para a nossa sorte, o R possui pacotes para todos eles.
+
+
+- apresentações: [`rmarkdown`](https://rmarkdown.rstudio.com/), [`xaringan`](https://bookdown.org/yihui/rmarkdown/xaringan.html)
+
+- artigos e relatórios: [`pagedown`](https://pagedown.rbind.io/)
+
+- blogs e sites: [`blogdown`](https://bookdown.org/yihui/blogdown/)
+
+- livros: [`bookdown`](https://bookdown.org/)
+
+- dashboards: [`flexdashboard`](https://pkgs.rstudio.com/flexdashboard/), [`shiny`](https://shiny.rstudio.com/)
+
+---
+## Dashboards
+
+Dashboars são uma boa ferramenta visual para resumirmos a informação contida em nossa base de dados. Eles podem ser estáticos ou dinâmicos.
+
+**Dashboards estáticos** não dependem de um servidor por trás, mas não permite que a pessoa utilizando o dashboard envie *inputs* para realizar suas próprias análises.
+
+**Dashboards dinâmicos** permitem essa interação, mas dependem de um servidor para calcular os novos resultados a partir dos *inputs* enviados.
+
+---
+## Desafios
+
+A seguir listamos alguns desafios do desenvolvimento e manutenção de um dashboard. Primeiro falaremos de premissas, o que deveríamos definir antes do início do desenvolvimento. Em seguida, descreveremos resumidamente como funciona cada etapa de desenvolvimento.
+
+#### Premissas
+
+- Base de dados
+- Público-alvo
+- Layout
+- Hospedagem
+
+#### Etapas
+
+- Desenho do dashboard
+
+- Construção
+
+- Deploy
+
+---
+## Base de dados
+
+**O que é?**&lt;br&gt;
+O conjunto de dados necessário para alimentar o dashboard.
+
+**Por que é importante?**&lt;br&gt;
+O desenvolvimento do dashboard e manutenção/atualização dependem de como os dados estarão estruturados. Além disso, problemas com a base podem travar a codificação e atrasar o projeto.
+
+**Perguntas a se fazer**&lt;br&gt;
+- Como os dados serão disponibilizados? Banco de dados? Excel? Googlesheets?
+- Os dados serão atualizados após o desenvolvimento? Com qual frequência?
+- Quem será responsável por estruturar e atualizar os dados?
+
+**Como decidir?**&lt;br&gt;
+- Se os dados serão atualizados com alta periodicidade, disponibilizar em um formato que facilite a alteração constante.
+- Fazer uma análise exploratória prévia para procurar inconsistências.
+
+---
+## Público-alvo
+
+**O que é?**&lt;br&gt;
+O perfil das pessoas que vão consumir o dashboard quando ele estiver pronto.
+
+**Por que é importante?**&lt;br&gt;
+Definir qual será o público-alvo do dashboard impacta em escolhas de usabilidade e complexidade do dashboard.
+
+**Perguntas a se fazer**&lt;br&gt;
+- Quem vai usar o dashboard?  Público geral? Jornalistas? Equipes dentro de uma empresa? Gerentes e pessoas tomadoras de decisão?
+- Qual o conhecimento prévio das pessoas sobre o tema do dashboard? É um grupo de pessoas mais técnico ou mais de negócio?
+
+**Como decidir?**&lt;br&gt;
+- Discutir e definir qual grupo de pessoas será o público do dashboard.
+- Entrevistar pessoas que utilizariam o dashboard e perguntar o que elas gostariam de ver e como.
+
+
+---
+## Layout
+
+**O que é?**&lt;br&gt;
+Diz respeito ao formato base do dashboard.
+
+**Por que é importante?**&lt;br&gt;
+O layout base vai ditar o desenho de cada página do dashboard. Além disso, pode ter impacto na usabilidade. Mudar o layout após o início do desenvolvimento pode gerar novas rodadas de codificação e aumentar prazos e custos.
+
+**Perguntas a se fazer**&lt;br&gt;
+- O dashboard terá várias páginas?
+- O dashboard terá menu superior ou lateral?
+- Onde ficarão os filtros (caso eles existam)?
+
+**Como decidir?**&lt;br&gt;
+- Analisar dashboards implementados em cada um dos possíveis formatos.
+- Fazer mockups para cada um dos possíveis formatos (impacta o tempo de desenvolvimento).
+
+---
+## Hospedagem
+
+**O que é?**&lt;br&gt;
+A infraestrutura a ser utilizada para disponibilizar o dashboard para o público-alvo.
+
+**Por que é importante?**&lt;br&gt;
+A depender do modelo da hospedagem, a configuração exige esforço técnico e manutenção contínua e/ou contração de serviço na nuvem.
+
+**Perguntas a se fazer**&lt;br&gt;
+- Qual será demanda de uso do dashboard?
+- O dashboard ficará na internet ou em uma rede local?
+- Existem pessoas disponíveis na equipe para a manutenção da hospedagem?
+- Qual o orçamento disponível para a hospedagem?
+
+**Como decidir?**&lt;br&gt;
+Avaliar o corpo técnico e orçamento disponíveis e escolher a opção de hospedagem que melhor se encaixa às necessidades.
+
+---
+## Desenho do dashboard
+
+**Objetivo**&lt;br&gt;
+Desenvolver uma primeira versão do layout completo do dashboard.
+
+**Vantagens de partir de um layout inicial**&lt;br&gt;
+- Facilita a construção do dashboard
+- Diminui a complexidade e o número de revisões.
+- Gera já de largada uma visão geral do que será construído.
+
+**Tarefas**&lt;br&gt;
+- Desenhar o dashboard em uma ferramenta de mockup, sem identidade visual.
+- Desenhar o dashboard com identidade visual (opcional, pode ser necessário uma pessoa designer).
+- Rodadas de revisão para validar os desenhos.
+
+---
+## Codificação do dashboard
+
+**Objetivo**&lt;br&gt;
+Dashboard pronto para ser disponibilizado ou utilizado.
+
+
+**Tarefas**&lt;br&gt;
+- Construir o layout do dashboard
+- Conectar o dashboard com a base de dados.
+- Definir e construir as visualizações (valores, gráficos e tabelas) do dashboard
+- Revisar e ajustar o dashboard até a versão final.
+
+---
+## Deploy
+
+**Objetivo**&lt;br&gt;
+Dashboard hospedado e disponível para o público-alvo.
+
+**Tarefas**&lt;br&gt;
+A depender do método de hospedagem escolhido:
+
+- definição do processo de atualização do dashboard ou da base de dados
+- construção dos ambientes de homologação e produção
+- configuração do serviço de hospedagem escolhido
+- configuração do ambiente.
+
+---
+## Atividade
+
+Vamos ao RStudio fazer alguns exemplos de dashboards.
+
+&lt;br&gt;
+
+&lt;center&gt;
+&lt;img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" width = "300" height = "300"&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;center&gt;
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "4:3"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
