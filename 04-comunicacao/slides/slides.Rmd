@@ -1,0 +1,211 @@
+---
+title: "Boas práticas de Comunicação"
+subtitle: "Workshop Data Sciente na Prática"
+author: "<img src = 'https://d33wubrfki0l68.cloudfront.net/9b0699f18268059bdd2e5c21538a29eade7cbd2b/67e5c/img/logo/cursor1-5.png' width = '30%'>"
+date: "`r paste(lubridate::month(Sys.Date(), label = TRUE, abbr = FALSE, locale = 'pt_BR.UTF-8'), 'de', lubridate::year(Sys.Date()))`"
+output:
+  xaringan::moon_reader:
+    css: 
+      - "default"
+      - "default-fonts"
+      - "https://curso-r.github.io/assets/css/padrao-curso-r.css"
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: "4:3"
+# knit: pagedown::chrome_print
+---
+
+```{r, child="00-preamble.Rmd"}
+
+```
+
+## O ciclo da Ciência de Dados
+
+
+---
+## Quem deve comunicar?
+
+---
+## Como comunicar?
+
+
+- apresentações: [`rmarkdown``](), [`xaringan`]()
+
+- livros: [`bookdown`]()
+
+- blogs e sites: [`blogdown`]()
+
+- artigos e relatórios: [`pagedown`]()
+
+- dashboards: [`flexdashboard`](), [`shiny`]()
+
+---
+## Dashboards
+
+Dashboars são uma boa ferramenta visual para resumirmos a informação contida em nossa base de dados. 
+
+Dashboards estáticos
+
+Dashboards dinâmicos
+
+---
+## Desafios do desenvolvimento e manutenção de um dashboard
+
+#### Premissas
+
+- Base de dados
+- Público-alvo
+- Layout
+- Hospedagem
+
+#### Etapas
+
+---
+## Base de dados
+
+O que é?
+O conjunto de dados necessário para alimentar o app.
+
+Por que é importante?
+O desenvolvimento do app e posterior manutenção/atualização dependem de como os dados estarão estruturados (bando de dados, planilha etc). Além disso, problemas com a base pode travar a etapa de codificação e atrasar o projeto.
+
+Perguntas a se fazer
+Como os dados serão disponibilizados? Banco de dados? Excel? Googlesheets?
+Os dados serão atualizados após o desenvolvimento? Com qual frequência?
+Quem será responsável por estruturar e atualizar os dados? Qual o orçamento disponível?
+
+Como decidir?
+Se os dados serão atualizados com alta periodicidade, disponibilizar em um formato que facilite a alteração constante.
+Fazer uma análise exploratória prévia para procurar inconsistências.
+
+
+---
+## Público-alvo
+
+O que é?
+O perfil das pessoas que vão consumir o app quando ele estiver pronto.
+
+Por que é importante?
+Definir qual será o público-alvo do aplicativo impacta em escolhas de usabilidade e complexidade do aplicativo.
+
+Perguntas a se fazer
+Quem vai usar o aplicativo? 
+Público geral? Jornalistas? Equipes dentro de uma empresa? Gerentes e pessoas tomadoras de decisão?
+Qual o conhecimento prévio das pessoas sobre o tema do aplicativo? É um grupo de pessoas mais técnico?
+
+Como decidir?
+Discutir e definir qual grupo de pessoas será o público do aplicativo.
+Entrevistar pessoas que utilizariam o aplicativo e perguntar o que elas gostariam de ver e como.
+
+
+---
+## Layout
+
+O que é?
+Diz respeito ao layout base do aplicativo.
+
+Por que é importante?
+O layout base vai ditar o desenho de cada página do aplicativo. Além disso, pode ter impacto na usabilidade. Mudar o layout base após o início do desenvolvimento pode gerar novas rodadas de desenvolvimento e aumentar prazos e custos.
+
+Perguntas a se fazer
+O app terá menu superior ou lateral?
+O app será parte de um site estático ou será autossuficiente?
+
+Como decidir?
+Analisar aplicativos em Shiny implementados em cada um dos possíveis formatos.
+Fazer mockups para cada um dos possíveis formatos (impacta o tempo de desenvolvimento).
+
+--
+## Hospedagem
+
+O que é?
+A infraestrutura a ser utilizada para disponibilizar o aplicativo para o público-alvo.
+
+Por que é importante?
+Hospedar um aplicativo Shiny exige um servidor bem configurado (rodando Shiny Server) para atender a demanda de uso. Essa configuração exige esforço técnico e manutenção contínua e/ou contração de serviço na nuvem.
+
+Perguntas a se fazer
+Qual será demanda de uso do app?
+O app ficará na internet ou em uma rede local?
+Existem pessoas disponíveis na equipe para a manutenção da hospedagem?
+Qual o orçamento disponível para a hospedagem?
+
+Como decidir?
+Avaliar o corpo técnico e orçamento disponíveis e escolher a opção de hospedagem que melhor se encaixa às necessidades.
+
+---
+## Desenho do dashboard
+
+Produto
+Primeira versão do layout completo do aplicativo.
+
+Motivação
+Desenhar o aplicativo durante a codificação pode gerar muito retrabalho, pois é muito comum o layout do app sofrer várias revisões. 
+
+Vantagens de partir de um layout inicial
+Facilita a construção do aplicativo.
+Diminui a complexidade e o número de revisões.
+Dá à parte contratante, já de largada, uma visão geral do que será construído.
+
+Tarefas
+Desenhar o aplicativo em uma ferramenta de mockup, sem identidade visual.
+Desenhar o aplicativo com identidade visual (opcional, necessita de contratação de designer).
+Rodadas de revisão para validar os desenhos.
+
+---
+## Codificação do dashboard
+
+Produto
+Aplicativo pronto para ser disponibilizado ou utilizado.
+
+Motivação
+Essa é a etapa de codificação, na qual o aplicativo será construído dentro do framework Shiny.
+
+
+Tarefas
+Construir o layout do aplicativo.
+Conectar o aplicativo com a base de dados.
+Definir e construir as visualizações (valores, gráficos e tabelas) do aplicativo.
+Revisar e ajustar o aplicativo até a versão final.
+
+
+---
+## Deploy
+
+Produto
+Aplicativo hospedado e disponível para o público-alvo.
+
+Motivação
+O aplicativo construído precisa estar disponível em um ambiente onde as pessoas possam acessá-lo. Esse ambiente pode ser um serviço Cloud ou servidor próprio, que requerem configuração e manutenção.
+
+
+Tarefas
+A depender do método de hospedagem escolhido:
+Definição do processo de atualização do app ou da base de dados.
+Construção dos ambientes de homologação e produção.
+Configuração do serviço de hospedagem escolhido.
+Configuração dos servidores e do Shiny Server.
+
+
+---
+## Atividade
+
+Vamos ao RStudio fazer alguns exemplos de dashboards.
+
+<br>
+
+<center>
+<img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" width = "300" height = "300">
+<br>
+<br>
+`r blue('Ao RStudio: 21-modulos-1/app.R e 22-modulos-2/app.R')`
+<center>
+
+---
+## Referências e material extra
+
+- [Artigo sobre módulos da RStudio](https://shiny.rstudio.com/articles/modules.html)
+
