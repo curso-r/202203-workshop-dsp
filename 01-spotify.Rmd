@@ -1,0 +1,226 @@
+---
+title: "Análise de dados do Spotify"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, error = FALSE, warning = FALSE,
+                      message = FALSE)
+
+library(tidyverse)
+library(knitr)
+library(corrr)
+
+spotify_raw <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-01-21/spotify_songs.csv')
+
+spotify_tidy <- spotify_raw |> 
+  mutate(
+    track_album_release_date_as_dt = case_when(
+      nchar(track_album_release_date) == 10 ~ as.Date(track_album_release_date),
+      nchar(track_album_release_date) == 7 ~ lubridate::ym(track_album_release_date),
+      TRUE ~ as.Date(paste0(track_album_release_date, "-01-01"))
+    )
+  )
+```
+
+# Sobre este trabalho
+
+Este documento analisa `r nrow(spotify_raw)` [músicas extraídas do Spotify](https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-01-21/spotify_songs.csv) com os objetivos de: 
+
+1. Identificar o que torna uma música popular;
+2. Identificar diferenças técnicas entre as músicas de diferentes gêneros musicais.
+
+Nas seção 2 discutiremos o primeiro objetivo acima e na seção 3 vamos analisar os gêneros musicais. Vamos utilizar como método principal de investigação análises descritivas tais como gráfico, tabelas e cálculo de sumários e, na última seção, vamos organizar as conclusões do estudo.
+
+## Dados analisados
+
+<!-- aqui devemos inserir um texto explicando o que é cada coluna, quantas linhas tem, se tem algum tipo de viés de dados etc -->
+
+```{r}
+spotify_raw |> 
+  head(5) |> 
+  kable()
+```
+
+# O que torna uma música popular?
+
+Nesta seção vamos analisar quais variáveis da nossa base ajudam a discriminar as músicas muito populares das pouco populares. Antes disso, entretanto, vamos analisar o padrão geral de variação do score de popularidade. 
+
+Na tabela abaixo encontram-se algumas estatísticas que nos ajudam a qualificar o padrão de variação do score de popularidade.
+
+```{r}
+
+spotify_raw |> 
+  summarise(
+    `Média do Score` = mean(track_popularity),
+    `Mediana do Score` = median(track_popularity),
+    `Desvio Padrão do Score` = sd(track_popularity),
+    `Coeficiente de Variação` = `Desvio Padrão do Score`/`Média do Score`
+  ) |> 
+  pivot_longer(everything(), names_to = "Indicador",
+               values_to = "Valor do indicador") |> 
+  mutate(
+    `Valor do indicador` = format(round(`Valor do indicador`, 2),
+                                  big.mark = ".", decimal.mark = ",",
+                                  nsmall = 2)
+  ) |> 
+  kable()
+
+```
+
+Já no gráfico abaixo verifica-se que embora a média e a mediana do score fiquem em torno de 45 pontos, existe uma concentração ao redor do 0 também.
+
+```{r, fig.cap="Histograma de contagem da variável Score de Popularidade. Neste gráfico nota-se que os scores se concentram ao longo do 50%, mas também há um pico significativo de músicas com Score aproximadamente zerado."}
+spotify_raw |> 
+  ggplot(aes(x = track_popularity)) + 
+  geom_histogram(fill = 'royalblue', alpha = .8) +
+  labs(x = "Faixa de Score de Popularidade",
+       y = "Contagem de músicas") +
+  theme_minimal() +
+  ggtitle("Histograma de contagem da variável\nScore de Popularidade")
+```
+
+Agora que qualificamos o perfil de variação da varável Score de Popularidade, vamos partir para uma análise da relação desta variável com as demais da base. Vamos começar identificando ou não uma relação com da varíavel Score com o ano de lançamento da música.
+
+No gráfico nota-se uma tendência de queda na popularidade média das músicas ao longo do tempo, mas com uma retomada íngreme a partir de 2010.
+
+```{r, fig.cap="Série histórica do score médio das músicas ao longo dos anos. Neste gráfico nota-se uma queda da popularidade de 1960 até 2010 e uma retomada rápida da popularidade da década de 80 a partir de 2010.."}
+
+media_de_score_por_ano <- spotify_raw |> 
+  mutate(
+    track_album_release_date_as_dt = as.Date(track_album_release_date),
+    ano_ingenuo = lubridate::year(track_album_release_date_as_dt),
+    ano = as.numeric(stringr::str_sub(track_album_release_date, 1, 4)),
+    track_album_release_date_as_dt_v2 = case_when(
+      nchar(track_album_release_date) == 10 ~ as.Date(track_album_release_date),
+      nchar(track_album_release_date) == 7 ~ lubridate::ym(track_album_release_date),
+      TRUE ~ as.Date(paste0(track_album_release_date, "-01-01"))
+    )
+  ) |> 
+  filter(!is.na(ano)) |> 
+  group_by(ano) |> 
+  summarise(
+    media_score = mean(track_popularity),
+    mediana_score = median(track_popularity),
+    percentual_de_score_menor_que_0 = mean(track_popularity <= 10),
+    media_score_sem_0 = mean(track_popularity[track_popularity > 10])
+  )
+
+media_de_score_por_ano |> 
+  ggplot(aes(x = ano, y = media_score)) + 
+  geom_point() +
+  theme_bw() +
+  labs(x = "Ano de lançamento da música",
+       y = "Popularidade média das músicas") +
+  ggtitle("Popularidade das músicas ao longo do tempo")
+
+```
+
+Entretanto, esse comportamento aparentemente é causado pelo percentual de músicas na concentração inferior da distribuição do score de probabilidade, que identificamos antes neste texto. O gráfico abaixo ilustra que o percentual de músicas com popularidade inferior a 10 subiu de por volta de 10% em 1960 a cerca de 40% em 2010.
+
+```{r}
+
+media_de_score_por_ano |> 
+  ggplot(aes(x = ano, y = percentual_de_score_menor_que_0)) + 
+  geom_point() +
+  theme_bw() +
+  labs(x = "Ano de lançamento da música",
+       y = "%  de músicas com score de popularidade inferior a 10") +
+  ggtitle("Percentual de músicas com score de popularidade inferior a 10 ao longo do tempo")
+
+```
+
+Tendo identificado que músicas lançadas em diferentes anos tem scores de popularidade bem distintos, vamos partir para a análise da variável gênero musical. Na tabela abaixo podemos comparar algumas estatísticas da popularidade associada a cada gênero. Com exceção do gênero Eletric Dance Music (EDM), o gênero musical não parece ser um fator determinante para a popularidade da música.
+
+```{r}
+funcao_que_arruma_numero <- scales::label_number(
+  accuracy = .01,
+  big.mark = ".",
+  decimal.mark = ",")
+
+spotify_raw |> 
+  group_by(playlist_genre) |> 
+  summarise(
+    `Média do Score` = mean(track_popularity),
+    `Mediana do Score` = median(track_popularity),
+    `Desvio Padrão do Score` = sd(track_popularity),
+    `Coeficiente de Variação` = `Desvio Padrão do Score`/`Média do Score`
+  ) |> 
+  mutate_if(is.numeric, funcao_que_arruma_numero) |> 
+  mutate(
+    playlist_genre = stringr::str_to_upper(playlist_genre)
+  ) |> 
+  rename(
+    `Gênero Musical` = playlist_genre
+  ) |> 
+  kable()
+```
+
+A próxima variável que analisaremos será a variável artista. Entrento, na base existem `r length(unique(spotify_raw$track_artist))` pessoas. Por isso, para conseguir avaliar o impacto do artista na popularidade vamos analisar a produtividade de cada artista em número de músicas.
+
+```{r}
+perfil_artista <- spotify_tidy |> 
+  group_by(track_artist) |> 
+  summarise(
+    pop_maxima = max(track_popularity),
+    pop_media = mean(track_popularity),
+    nro_musicas = n(),
+    idade = as.numeric(
+      Sys.Date() - min(track_album_release_date_as_dt))/365
+  )
+
+perfil_artista |> 
+  filter(nro_musicas > 5) |>  
+  ggplot(aes(x = nro_musicas)) + 
+  geom_histogram() + 
+  scale_x_log10()
+  
+```
+
+```{r}
+perfil_artista |> 
+  ggplot(aes(x = nro_musicas, y = pop_maxima)) + 
+  geom_point()
+```
+
+```{r}
+spotify_tidy |>
+  sample_n(5000) |> 
+  #select(track_popularity, loudness, tempo) |>
+  pivot_longer(cols = c(danceability, energy, loudness, speechiness,
+                        tempo, acousticness, instrumentalness, valence,
+                        liveness)) |> 
+  ggplot(aes(x = value, y = track_popularity)) + 
+  geom_point() +
+  facet_wrap(~name, scales = 'free')
+```
+
+```{r}
+
+spotify_tidy |> 
+  select(track_popularity,
+         danceability, energy, loudness,
+         speechiness, acousticness,
+         instrumentalness,
+         liveness, valence, tempo) |> 
+  correlate(method = "spearman") |> 
+  network_plot(min_cor = 0)
+
+# visualização alternativa 
+
+# corrplot::corrplot(cor(spotify_tidy |> 
+#                            select(track_popularity,
+#                                   danceability, energy, loudness,
+#                                   speechiness, acousticness,
+#                                   instrumentalness,
+#                                   liveness, valence, tempo)))
+
+```
+
+# Gêneros musicais e atributos técnicos das músicas
+
+
+
+# Conclusões
+
+Com relação ao primeiro objetivo desta análise, concluímos descritivamente que os fatores relevantes para a popularidade de uma música são a época do seu lançamento e características das pessoas artistas por trás das músicas. Identificamos que a longevidade e número de músicas das pessoas tem relação com a popularidade de suas músicas.
