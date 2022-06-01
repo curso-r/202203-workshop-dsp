@@ -1,0 +1,150 @@
+---
+title: "Relatórios com pagedown"
+subtitle: "Workshop Data Sciente na Prática"
+author: "<img src = 'https://d33wubrfki0l68.cloudfront.net/9b0699f18268059bdd2e5c21538a29eade7cbd2b/67e5c/img/logo/cursor1-5.png' width = '30%'>"
+date: "`r paste(lubridate::month(Sys.Date(), label = TRUE, abbr = FALSE), 'de', lubridate::year(Sys.Date()))`"
+output:
+  xaringan::moon_reader:
+    css: 
+      - "default"
+      - "default-fonts"
+      - "https://curso-r.github.io/assets/css/padrao-curso-r.css"
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: "4:3"
+# knit: pagedown::chrome_print
+---
+
+```{r, child="00-preamble.Rmd"}
+
+```
+
+## O pacote pagedown
+
+O pacote pagedown permite a construção de relatórios em PDF a partir de documentos HTML paginados feitos em R Markdown.
+
+O PDF final é gerado a patir da impressão para PDF disponível nos navegadores modernos (Google Chrome, por exemplo). Por conta disso podemos usar HTML e CSS para deixar nossos relatórios bonitos.
+
+<br>
+
+```{r, echo = FALSE, fig.align="center", out.width="250px"}
+knitr::include_graphics("img/pagedown.svg")
+```
+
+---
+## Como usar?
+
+Para criar um documento HTML paginado com o pacote `pagedown` basta utilizarmos o seguinte yaml em um arquivo R Markdown:
+
+```
+output:
+  pagedown::html_paged
+```
+
+Para imprimir o arquivo para PDF, basta acrescentar a seguinte linha no yaml:
+
+```
+output:
+  pagedown::html_paged
+knit: pagedown::chrome_print
+```
+
+Para isso, você precisa ter o Google Chrome, o Microsoft Edge ou o Chromium instalados.
+
+
+---
+## Opções de output
+
+- Currículo: `pagedown::html_resume`
+
+- Pôster: `pagedown::poster_relaxed` ou `pagedown::poster_jacobs`
+
+- Cartão de visitas: `pagedown::business_card`
+
+- Carta: `pagedown::html_letter`
+
+- Tese: `pagedown::thesis_paged`
+
+---
+## Referências cruzadas
+
+Há três maneiras de fazer referência cruzada em um documento `pagedown`:
+
+- `[Nome do capítulo]`
+
+- `[Texto](#id_do_cap)`
+
+- `\@ref(id_do_cap)`
+
+
+---
+## Lista de tabelas e figuras
+
+Você pode incluir seções de lista de tabelas e de figuras usando os parâmetros `lot` e `lof` no yaml.
+
+```
+title: "Relatório com lista de tabelas e figuras"
+output: pagedown::html_paged
+lot: true
+lot-title: "Lista de tabelas"
+lof: true
+lof-title: "Lista de figuras"
+```
+
+
+---
+## Internacionalização
+
+Para traduzir os textos padrões que aparecem em alguns elementos do documento, como tabelas, figuras, capítulos etc, precisamos criar um arquivo de configuração chamado `_bookdown.yml` e definir dentro dele quais serão os novos nomes.
+
+```
+language:
+  label:
+    fig: 'Figura '
+    tab: 'Tabela '
+```
+
+Para saber mais, acesse [https://bookdown.org/yihui/bookdown/internationalization.html](https://bookdown.org/yihui/bookdown/internationalization.html).
+
+---
+## Templates 
+
+O pacote `pagedreport` possui alguns templates bem formatados de relatório que você pode usar de maneira bem simples.
+
+[Clique aqui](https://pagedreport.rfortherestofus.com/) para conferir os templates e acessar a documentação do pacote.
+
+---
+## Customizando o CSS
+
+Um documento HTML criado com o pacote `pagedown::html_paged` utiliza três arquivos CSS padrão:
+
+```
+output:
+  pagedown::html_paged: 
+    css:
+      - default-fonts
+      - default-page
+      - default
+```
+
+Você pode criar as suas próprias regras CSS para aprimorar ou substituir as regras padrões:
+
+```
+output:
+  pagedown::html_paged: 
+    css:
+      - custom.css
+      - default-fonts
+      - default-page
+      - default
+```
+
+---
+## Separando o relatório em vários arquivos
+
+Às vezes, separar um relatório muito grande em vários arquivos é útil para a organização.
+
+Para compilar um relatório separado em vários arquivos, basta usar a opção `child="nome_do_arq.Rmd` em um chunk vazio.

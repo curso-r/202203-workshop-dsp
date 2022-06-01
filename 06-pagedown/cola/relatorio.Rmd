@@ -1,0 +1,51 @@
+---
+title: Relatório
+subtitle: Semana Data Science na Prática
+author: Curso-R
+date: 01/06/2022
+lot: true
+lof: true
+output:
+  pagedown::html_paged:
+    css:
+      - default-fonts
+      - default-page
+      - default
+      - custom.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+```{r}
+knitr::kable(head(mtcars[, c(1:4)]), caption = 'An example table.')
+```
+
+
+# Including Plots {#plots}
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE, fig.cap="Exemplo de figura"}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot \@ref(plots).
+
+Referência à seção [R Markdown].
+
+```{r, child="parte-2.Rmd"}
+
+```
+

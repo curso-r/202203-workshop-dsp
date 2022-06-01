@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Relatórios com pagedown</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="" />
+    <script src="libs/header-attrs-2.13/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://curso-r.github.io/assets/css/padrao-curso-r.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Relatórios com pagedown
+## Workshop Data Sciente na Prática
+### <img src = 'https://d33wubrfki0l68.cloudfront.net/9b0699f18268059bdd2e5c21538a29eade7cbd2b/67e5c/img/logo/cursor1-5.png' width = '30%'>
+### junho de 2022
+
+---
+
+
+
+
+
+
+## O pacote pagedown
+
+O pacote pagedown permite a construção de relatórios em PDF a partir de documentos HTML paginados feitos em R Markdown.
+
+O PDF final é gerado a patir da impressão para PDF disponível nos navegadores modernos (Google Chrome, por exemplo). Por conta disso podemos usar HTML e CSS para deixar nossos relatórios bonitos.
+
+&lt;br&gt;
+
+&lt;img src="img/pagedown.svg" width="250px" style="display: block; margin: auto;" /&gt;
+
+---
+## Como usar?
+
+Para criar um documento HTML paginado com o pacote `pagedown` basta utilizarmos o seguinte yaml em um arquivo R Markdown:
+
+```
+output:
+  pagedown::html_paged
+```
+
+Para imprimir o arquivo para PDF, basta acrescentar a seguinte linha no yaml:
+
+```
+output:
+  pagedown::html_paged
+knit: pagedown::chrome_print
+```
+
+Para isso, você precisa ter o Google Chrome, o Microsoft Edge ou o Chromium instalados.
+
+
+---
+## Opções de output
+
+- Currículo: `pagedown::html_resume`
+
+- Pôster: `pagedown::poster_relaxed` ou `pagedown::poster_jacobs`
+
+- Cartão de visitas: `pagedown::business_card`
+
+- Carta: `pagedown::html_letter`
+
+- Tese: `pagedown::thesis_paged`
+
+---
+## Referências cruzadas
+
+Há três maneiras de fazer referência cruzada em um documento `pagedown`:
+
+- `[Nome do capítulo]`
+
+- `[Texto](#id_do_cap)`
+
+- `\@ref(id_do_cap)`
+
+
+---
+## Lista de tabelas e figuras
+
+Você pode incluir seções de lista de tabelas e de figuras usando os parâmetros `lot` e `lof` no yaml.
+
+```
+title: "Relatório com lista de tabelas e figuras"
+output: pagedown::html_paged
+lot: true
+lot-title: "Lista de tabelas"
+lof: true
+lof-title: "Lista de figuras"
+```
+
+
+---
+## Internacionalização
+
+Para traduzir os textos padrões que aparecem em alguns elementos do documento, como tabelas, figuras, capítulos etc, precisamos criar um arquivo de configuração chamado `_bookdown.yml` e definir dentro dele quais serão os novos nomes.
+
+```
+language:
+  label:
+    fig: 'Figura '
+    tab: 'Tabela '
+```
+
+Para saber mais, acesse [https://bookdown.org/yihui/bookdown/internationalization.html](https://bookdown.org/yihui/bookdown/internationalization.html).
+
+---
+## Templates 
+
+O pacote `pagedreport` possui alguns templates bem formatados de relatório que você pode usar de maneira bem simples.
+
+[Clique aqui](https://pagedreport.rfortherestofus.com/) para conferir os templates e acessar a documentação do pacote.
+
+---
+## Customizando o CSS
+
+Um documento HTML criado com o pacote `pagedown::html_paged` utiliza três arquivos CSS padrão:
+
+```
+output:
+  pagedown::html_paged: 
+    css:
+      - default-fonts
+      - default-page
+      - default
+```
+
+Você pode criar as suas próprias regras CSS para aprimorar ou substituir as regras padrões:
+
+```
+output:
+  pagedown::html_paged: 
+    css:
+      - custom.css
+      - default-fonts
+      - default-page
+      - default
+```
+
+---
+## Separando o relatório em vários arquivos
+
+Às vezes, separar um relatório muito grande em vários arquivos é útil para a organização.
+
+Para compilar um relatório separado em vários arquivos, basta usar a opção `child="nome_do_arq.Rmd` em um chunk vazio.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "4:3"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
