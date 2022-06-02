@@ -1,0 +1,57 @@
+---
+title: "Relatório de Segurança Pública"
+subtitle: "Um rápido estudo sobre os dados de SP"
+author: "Turma do Workshop Data Science na Prática"
+date: "01/06/2022"
+lot: false
+lof: true
+lof-title: "Lista de figuras"
+output:
+  pagedreport::paged_hazelnuts:
+    front_img: "https://images.pexels.com/photos/717988/pexels-photo-717988.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260"
+    back_img: "https://images.pexels.com/photos/3303615/pexels-photo-3303615.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
+    logo: "https://media.flaticon.com/dist/min/img/logo/flaticon_negative.svg"
+    img_to_dark: TRUE
+    logo_to_white: TRUE
+toc-title: "Table of Contents"
+main-color: "#E40A2D"
+secondary-color: "#00873E"
+google-font: TRUE
+main-font: "Raleway"
+header-font: "Mountains of Christmas"
+#knit: pagedown::chrome_print
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
+```
+
+```{r, include=FALSE}
+library(dplyr)
+library(ggplot2)
+
+ssp <- readr::read_rds("ssp.rds") |> 
+  mutate(
+    data = lubridate::make_date(
+      year = ano,
+      month = mes,
+      day = 1
+    )
+  )
+```
+
+```{r child="01-introducao.Rmd"}
+
+```
+
+```{r child="02-descritiva.Rmd"}
+
+```
+
+```{r child="03-modelo.Rmd"}
+
+```
+
+```{r child="04-conclusao.Rmd"}
+
+```

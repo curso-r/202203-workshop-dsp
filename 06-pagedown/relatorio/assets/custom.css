@@ -1,0 +1,20 @@
+body {
+  font-size: 0.8em;
+}
+
+p {
+  text-align: justify;
+}
+
+.subtitle {
+  font-size: 15pt;
+}
+
+.author, .date {
+  font-size: 11pt;
+  text-align: right;
+}
+
+.author {
+  margin-top: 40px;
+}

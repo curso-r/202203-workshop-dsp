@@ -1,0 +1,20 @@
+
+# Análise descritiva {#descritiva}
+
+Etiam ultrices tellus et eros vestibulum luctus quis at ligula. Donec id feugiat lorem. Duis libero ante, viverra in lobortis at, sollicitudin ut ante. Maecenas ut volutpat nunc. Morbi porttitor turpis sit amet tempor hendrerit. Ut urna augue, molestie a quam in, ornare pharetra urna. Integer eu magna eget odio aliquam placerat. Aliquam molestie vulputate nibh. Ut venenatis justo in orci eleifend consectetur. Sed elementum dictum fermentum. Etiam viverra tortor id justo interdum commodo. Pellentesque finibus, leo a aliquet molestie, quam massa maximus magna, non euismod dui quam condimentum lectus. Ut semper mattis libero, at dictum lacus commodo in. Fusce pharetra neque libero, sit amet feugiat erat maximus sed.
+
+```{r, echo = FALSE, fig.cap="Série mensal do total de roubo de veículos para a cidade de Campinas."}
+ssp |> 
+  filter(
+    municipio_nome == "Campinas"
+  ) |> 
+  group_by(data) |> 
+  summarise(
+    total_roubo_veiculo = sum(roubo_veiculo)
+  ) |> 
+  ggplot(aes(x = data, y = total_roubo_veiculo)) +
+  geom_line(color = "red") +
+  theme_minimal()
+```
+
+Nulla et arcu volutpat, condimentum ipsum ac, gravida felis. Vivamus erat tellus, tincidunt at felis in, dignissim sagittis nisi. Nam viverra semper ex. Nam posuere tempus massa ut feugiat. Quisque lorem erat, tempus id interdum eu, dignissim suscipit nisi. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Sed scelerisque nisi eu finibus scelerisque.
