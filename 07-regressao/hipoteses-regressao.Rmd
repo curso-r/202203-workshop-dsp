@@ -1,0 +1,35 @@
+---
+title: "Untitled"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# regressão simples
+
+$$Y_i|X_i = \beta_0 + \beta_1 x_i + \epsilon_i$$
+
+A definição de $\epsilon$ é:
+
+$$\epsilon_i \sim N(0, \sigma)$$
+
+$$e^{\beta_0 + x\beta_1} = y \implies \log(y) = \beta_0 + \beta_1x$$
+
+# regressão generalizada
+
+$$\text{A média de } l(Y_i) | X_i = x_i \text{ é } \beta_0 + \beta_1 x_i$$
+$$l(Y_i) \sim F$$
+
+$$Y_i|X_i = \beta_0 + \beta_1 x_i + \epsilon_i$$
+
+A definição de $\epsilon$ é:
+
+$$\epsilon_i \sim ??(??)$$
+
+Agora poderemos flexibilizar um monte de coisas:
+
+- O erro vai poder depender do $Y$
+- O erro vai poder dar origem só a $Y$ positivo/negativo
+- O erro pode ter distribuição que não é normal
